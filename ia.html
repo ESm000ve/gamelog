@@ -161,6 +161,7 @@
 .iss-ilbl{font-size:13px;font-weight:500;color:var(--text)}
 .iss-idesc{font-size:12px;color:var(--text-muted);line-height:1.6}
 .sev-high{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--c-broken-bg);color:var(--c-broken);border:1px solid rgba(220,38,38,0.3);align-self:flex-start}
+.sev-resolved{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--c-state-bg);color:var(--c-state);border:1px solid rgba(5,150,105,0.3);align-self:flex-start}
 
 /* LEGEND */
 .legend{display:flex;flex-wrap:wrap;gap:10px;padding:9px 18px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}
@@ -403,10 +404,10 @@ const INVENTORY = [
 ];
 
 const ISSUES = [
-  { id:'broken',icon:'🔴',title:'Broken Navigation Targets',open:true,items:[
-    { label:'Command Palette → "Library"',desc:'Calls navigate("/library"). The real route is / (root). Currently 404s / renders nothing matching.',sev:'high' },
-    { label:'Command Palette → "What to Play"',desc:'Calls navigate("/what-to-play"). The real route is /recommend. Broken.',sev:'high' },
-    { label:'Command Palette → "Spin Backlog Roulette"',desc:'Also calls navigate("/what-to-play") — same broken target. Two bugs: the route is wrong, and even if fixed to /recommend, the action would only navigate to the screen, not open the Backlog Roulette modal (which requires a second manual click).',sev:'high' }
+  { id:'broken',icon:'🟢',title:'Broken Navigation Targets [RESOLVED]',open:true,items:[
+    { label:'[RESOLVED] Command Palette → "Library"',desc:'Fixed: Calls navigate("/") correctly.',sev:'resolved' },
+    { label:'[RESOLVED] Command Palette → "What to Play"',desc:'Fixed: Calls navigate("/recommend") correctly.',sev:'resolved' },
+    { label:'[RESOLVED] Command Palette → "Spin Backlog Roulette"',desc:'Fixed: Navigates to /recommend and triggers gamelog:open-roulette to open Backlog Roulette modal automatically.',sev:'resolved' }
   ]},
   { id:'labels',icon:'🏷',title:'Label Mismatches Across Nav Surfaces',items:[
     { label:'/recommend',desc:'Sidebar: "What to Play" · On-screen header: "What to Play Next" · Command Palette: "What to Play"' },
@@ -417,8 +418,8 @@ const ISSUES = [
     { label:'/search',desc:'On-screen header: "Search Results" — no Sidebar or Command Palette label to compare against.' }
   ]},
   { id:'missing',icon:'🔍',title:'Missing from Nav Surfaces',items:[
-    { label:'"Lists" absent from Command Palette',desc:'Lists is a full Sidebar-level destination but has no entry in the Command Palette Navigation category.' },
-    { label:'"Browse Systems" absent from Command Palette',desc:'Browse Systems is a full Sidebar-level destination with no Command Palette entry.' },
+    { label:'[RESOLVED] "Lists" absent from Command Palette',desc:'Fixed: Lists (/lists) is now included in Command Palette Navigation category.',sev:'resolved' },
+    { label:'[RESOLVED] "Browse Systems" absent from Command Palette',desc:'Fixed: Browse Systems (/systems) is now included in Command Palette Navigation category.',sev:'resolved' },
     { label:'Search Results has no presence except the Enter key',desc:'The only path in is pressing Enter in the Global Search widget. No visible affordance indicates that Enter triggers navigation to a full results page.' }
   ]},
   { id:'naming',icon:'🔄',title:'Two Things Named "Search" with Different Jobs',items:[
@@ -443,8 +444,8 @@ const ISSUES = [
   { id:'behavior',icon:'⚙',title:'Same Component, Inconsistent Behavior',items:[
     { label:'CoverCard is clickable everywhere except Friends',desc:'CoverCard opens Game Detail on click on Library, Search Results, Browse by System, and List contents — but is rendered without an onClick handler on the Compare Libraries (Friends) screen. Visually identical, but completely inert.' }
   ]},
-  { id:'hidden',icon:'⚠',title:'Hidden Route with Destructive Side Effect',items:[
-    { label:'/debug — Store Diagnostic Check',desc:'Zero UI links anywhere in the app — only reachable by typing the URL directly. Automatically clears the entire local database (db.games.clear(), db.logs.clear(), db.lists.clear()) as part of its self-running test, with no confirmation step. The route is live and unprotected.',sev:'high' }
+  { id:'hidden',icon:'🟢',title:'Hidden Route with Destructive Side Effect [RESOLVED]',items:[
+    { label:'[RESOLVED] /debug — Store Diagnostic Check',desc:'Fixed: No longer automatically clears the database on mount. Requires clicking an explicit button and confirming a warning prompt before running.',sev:'resolved' }
   ]}
 ];
 
@@ -661,7 +662,7 @@ function renderIssues() {
 
   const groups = ISSUES.map(g => {
     const items = g.items.map(item => `<div class="iss-item">
-      ${item.sev==='high' ? '<span class="sev-high">High severity</span>' : ''}
+      ${item.sev==='high' ? '<span class="sev-high">High severity</span>' : item.sev==='resolved' ? '<span class="sev-resolved">Resolved</span>' : ''}
       <div class="iss-ilbl">${item.label}</div>
       <div class="iss-idesc">${item.desc}</div>
     </div>`).join('');

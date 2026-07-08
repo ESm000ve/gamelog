@@ -3,7 +3,7 @@ import { RefreshCw, Play, Loader2 } from "lucide-react";
 import { getRecommendations, type RecommenderCandidate } from "../../services/recommender";
 import { coverUrl } from "../../types/gameDetail";
 import { db } from "../../db/schema";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { RouletteModal } from "./RouletteModal";
 import { Button } from "../../components/ui/Button";
 
@@ -14,6 +14,7 @@ export function RecommendScreen() {
   const [excludedIds, setExcludedIds] = useState<number[]>([]);
   const [rouletteOpen, setRouletteOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchPicks = async (currentIntent: string, currentExcluded: number[]) => {
     setLoading(true);
@@ -29,6 +30,19 @@ export function RecommendScreen() {
 
   useEffect(() => {
     fetchPicks("", []);
+  }, []);
+
+  useEffect(() => {
+    if (location.state && (location.state as any).openRoulette) {
+      setRouletteOpen(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+
+  useEffect(() => {
+    const handleOpenRoulette = () => setRouletteOpen(true);
+    window.addEventListener("gamelog:open-roulette", handleOpenRoulette);
+    return () => window.removeEventListener("gamelog:open-roulette", handleOpenRoulette);
   }, []);
 
   const handleReroll = () => {

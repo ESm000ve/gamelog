@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Command, BookOpen, Sparkles, Trophy, Users, BarChart2, Settings, Plus, Flame } from "lucide-react";
+import { Search, Command, BookOpen, Sparkles, Trophy, Users, BarChart2, Settings, Plus, Flame, List, Gamepad2 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../db/schema";
 
@@ -64,7 +64,23 @@ export function CommandPalette() {
       title: "Library",
       subtitle: "Browse your games collection",
       icon: <BookOpen size={18} color="var(--apple-accent)" />,
-      onSelect: () => navigate("/library"),
+      onSelect: () => navigate("/"),
+    },
+    {
+      id: "nav-lists",
+      category: "Navigation",
+      title: "Lists",
+      subtitle: "Organize custom game lists and collections",
+      icon: <List size={18} color="var(--apple-blue)" />,
+      onSelect: () => navigate("/lists"),
+    },
+    {
+      id: "nav-systems",
+      category: "Navigation",
+      title: "Browse Systems",
+      subtitle: "Browse your games by hardware platform",
+      icon: <Gamepad2 size={18} color="var(--apple-indigo)" />,
+      onSelect: () => navigate("/systems"),
     },
     {
       id: "nav-what-to-play",
@@ -72,7 +88,7 @@ export function CommandPalette() {
       title: "What to Play",
       subtitle: "Recommendations and Backlog Roulette",
       icon: <Sparkles size={18} color="var(--apple-orange)" />,
-      onSelect: () => navigate("/what-to-play"),
+      onSelect: () => navigate("/recommend"),
     },
     {
       id: "nav-activity",
@@ -126,7 +142,8 @@ export function CommandPalette() {
       subtitle: "Pick a random game from your backlog to play",
       icon: <Flame size={18} color="var(--apple-red)" />,
       onSelect: () => {
-        navigate("/what-to-play");
+        navigate("/recommend", { state: { openRoulette: true } });
+        window.dispatchEvent(new CustomEvent("gamelog:open-roulette"));
       },
     },
   ];
