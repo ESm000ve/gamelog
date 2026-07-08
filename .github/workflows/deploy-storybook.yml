@@ -38,6 +38,9 @@ jobs:
           # Disable Storybook telemetry in CI
           STORYBOOK_DISABLE_TELEMETRY: 1
 
+      - name: Copy ia.html into Storybook output
+        run: cp ia.html storybook-static/ia.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

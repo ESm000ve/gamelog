@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamelog — Information Architecture</title>
+<meta name="description" content="Interactive Information Architecture map for the Gamelog app — screens, navigation hierarchy, entry points, and flagged issues.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Embed: <iframe src="ia.html" width="100%" height="820" frameborder="0" style="border-radius:12px"></iframe> -->
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080e;--surface:#111118;--surface-2:#18181f;--surface-3:#20202a;
+  --border:rgba(255,255,255,0.07);--border-hover:rgba(255,255,255,0.14);
+  --text:#e2e8f0;--text-muted:#64748b;--text-dim:#3f4a5c;
+  --accent:#6366f1;--accent-light:#818cf8;--accent-dim:rgba(99,102,241,0.15);
+  --c-screen:#7c3aed;--c-screen-bg:rgba(124,58,237,0.12);
+  --c-modal:#0284c7;--c-modal-bg:rgba(2,132,199,0.12);
+  --c-overlay:#d97706;--c-overlay-bg:rgba(217,119,6,0.12);
+  --c-chrome:#475569;--c-chrome-bg:rgba(71,85,105,0.15);
+  --c-broken:#dc2626;--c-broken-bg:rgba(220,38,38,0.12);
+  --c-state:#059669;--c-state-bg:rgba(5,150,105,0.12);
+  --c-widget:#c026d3;--c-widget-bg:rgba(192,38,211,0.12);
+  --warn:#f59e0b;--warn-bg:rgba(245,158,11,0.12);
+  --font:'Inter',-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r:8px;--r-sm:5px
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);background:rgba(8,8,14,0.97);backdrop-filter:blur(16px);flex-shrink:0;flex-wrap:wrap;z-index:10}
+.hdr-logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.hdr-logo svg{width:26px;height:26px}
+.hdr-title{font-size:14px;font-weight:700;line-height:1.1}
+.hdr-sub{font-size:10px;color:var(--text-muted);margin-top:1px}
+.hdiv{width:1px;height:26px;background:var(--border);flex-shrink:0}
+.tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:calc(var(--r) + 2px);padding:3px}
+.tab{padding:4px 13px;border-radius:var(--r-sm);font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--accent);color:#fff}
+.hdr-btns{display:flex;gap:6px;margin-left:auto}
+.btn{padding:4px 11px;border-radius:var(--r-sm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface-2);color:var(--text-muted);transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--border-hover);color:var(--text)}
+
+/* STATS STRIP */
+.stats-strip{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.stat{display:flex;flex-direction:column;align-items:center;padding:8px 20px;border-right:1px solid var(--border);gap:1px}
+.stat:last-child{border-right:none}
+.stat-val{font-size:17px;font-weight:700;color:var(--text);line-height:1}
+.stat-lbl{font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em}
+
+/* MAIN */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* TREE */
+.tree-panel{flex:1;overflow-y:auto;padding:16px 18px;scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
+.tree-panel::-webkit-scrollbar{width:5px}
+.tree-panel::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+.tree-root{display:flex;flex-direction:column;gap:2px}
+.node-wrap{position:relative}
+.node{display:flex;align-items:flex-start;gap:7px;padding:6px 9px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;transition:background .1s,border-color .1s}
+.node:hover{background:var(--surface-2)}
+.node.selected{background:var(--accent-dim);border-color:rgba(99,102,241,0.3)}
+.node.broken-node .node-label{color:var(--c-broken)}
+.node.expanded .ntog{transform:rotate(90deg)}
+.ntog{flex-shrink:0;width:16px;height:16px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:9px;margin-top:2px;transition:transform .15s;user-select:none}
+.ntog.leaf{cursor:default}
+.ncontent{flex:1;min-width:0}
+.nhead{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node-label{font-size:13px;font-weight:500;color:var(--text);line-height:1.3}
+.ntrigger{font-size:11px;color:var(--text-dim);margin-top:2px;font-style:italic}
+.nnote{font-size:11px;color:var(--warn);margin-top:3px;line-height:1.5}
+.nnote.err{color:var(--c-broken)}
+.node-children{margin-left:24px;padding-left:12px;border-left:1px solid var(--border);margin-top:2px;display:flex;flex-direction:column;gap:2px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0}
+.b-screen{background:var(--c-screen-bg);color:#a78bfa;border:1px solid rgba(124,58,237,0.25)}
+.b-modal{background:var(--c-modal-bg);color:#60a5fa;border:1px solid rgba(2,132,199,0.25)}
+.b-overlay{background:var(--c-overlay-bg);color:#fbbf24;border:1px solid rgba(217,119,6,0.25)}
+.b-chrome{background:var(--c-chrome-bg);color:#94a3b8;border:1px solid rgba(71,85,105,0.3)}
+.b-broken{background:var(--c-broken-bg);color:#f87171;border:1px solid rgba(220,38,38,0.3)}
+.b-state{background:var(--c-state-bg);color:#34d399;border:1px solid rgba(5,150,105,0.3)}
+.b-widget{background:var(--c-widget-bg);color:#e879f9;border:1px solid rgba(192,38,211,0.3)}
+.b-warn{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(245,158,11,0.3)}
+.rbadge{font-family:var(--mono);font-size:11px;color:var(--text-muted);background:var(--surface-3);padding:1px 7px;border-radius:var(--r-sm);border:1px solid var(--border);flex-shrink:0}
+.rbadge.err{color:var(--c-broken);border-color:rgba(220,38,38,0.3);background:var(--c-broken-bg)}
+
+/* DEPTH SECTION HEADERS */
+.depth-hdr{font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;padding:14px 9px 5px;display:flex;align-items:center;gap:8px}
+.depth-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
+.global-section{margin-top:20px;padding-top:2px;border-top:1px dashed rgba(255,255,255,0.06)}
+
+/* DETAIL PANEL */
+.detail-panel{width:330px;flex-shrink:0;border-left:1px solid var(--border);overflow-y:auto;background:var(--surface);display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
+.detail-panel::-webkit-scrollbar{width:5px}
+.detail-panel::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+.d-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text-dim);padding:32px 20px;text-align:center}
+.d-empty svg{opacity:.25}
+.d-empty p{font-size:12px;line-height:1.7}
+.d-content{padding:18px;display:flex;flex-direction:column;gap:16px}
+.d-hdr{padding-bottom:14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:9px}
+.d-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.3}
+.d-meta{display:flex;flex-wrap:wrap;gap:5px}
+.d-trigger{font-size:12px;color:var(--text-muted);font-style:italic;line-height:1.5}
+.d-sec{display:flex;flex-direction:column;gap:7px}
+.d-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim)}
+.ep-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:var(--surface-2);border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;color:var(--text);line-height:1.5}
+.ep-item.sole{border-color:rgba(245,158,11,0.3);background:var(--warn-bg)}
+.ep-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-light);flex-shrink:0;margin-top:5px}
+.ep-dot.sole{background:var(--warn)}
+.note-card{padding:9px 11px;background:var(--warn-bg);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r-sm);font-size:12px;color:var(--warn);line-height:1.6;display:flex;gap:8px}
+.note-card.err{background:var(--c-broken-bg);border-color:rgba(220,38,38,0.25);color:var(--c-broken)}
+.note-card.info{background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.2);color:var(--accent-light)}
+
+/* INVENTORY */
+.inv-view{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.inv-filters{display:flex;gap:7px;padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.filt-btn{padding:4px 13px;border-radius:999px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-muted);transition:all .15s}
+.filt-btn:hover{color:var(--text);border-color:var(--border-hover)}
+.filt-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.inv-wrap{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
+.inv-wrap::-webkit-scrollbar{width:5px}
+.inv-wrap::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-dim);padding:10px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.035);transition:background .1s}
+tbody tr:hover{background:var(--surface-2)}
+tbody td{padding:9px 14px;font-size:13px;vertical-align:top}
+.td-n{color:var(--text-dim);font-size:12px;padding-right:6px}
+.td-route{font-family:var(--mono);font-size:11px;color:var(--text-muted)}
+.td-desc{font-size:12px;color:var(--text-muted);line-height:1.55}
+
+/* ISSUES */
+.iss-view{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
+.iss-view::-webkit-scrollbar{width:5px}
+.iss-view::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:3px}
+.iss-group{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.iss-ghdr{display:flex;align-items:center;gap:9px;padding:11px 14px;background:var(--surface-2);cursor:pointer;user-select:none;transition:background .1s}
+.iss-ghdr:hover{background:var(--surface-3)}
+.iss-gicon{font-size:14px;flex-shrink:0}
+.iss-gtitle{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.iss-cnt{font-size:11px;color:var(--text-dim);background:var(--surface-3);padding:1px 8px;border-radius:999px;border:1px solid var(--border)}
+.iss-chev{font-size:9px;color:var(--text-dim);transition:transform .15s;flex-shrink:0}
+.iss-group.open .iss-chev{transform:rotate(90deg)}
+.iss-gbody{display:none;flex-direction:column;gap:1px;background:var(--border)}
+.iss-group.open .iss-gbody{display:flex}
+.iss-item{padding:11px 14px;background:var(--surface);display:flex;flex-direction:column;gap:5px}
+.iss-ilbl{font-size:13px;font-weight:500;color:var(--text)}
+.iss-idesc{font-size:12px;color:var(--text-muted);line-height:1.6}
+.sev-high{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--c-broken-bg);color:var(--c-broken);border:1px solid rgba(220,38,38,0.3);align-self:flex-start}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:9px 18px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim)}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+@media(max-width:760px){.detail-panel{display:none}.hdr-btns{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="0 0 26 26" fill="none">
+      <rect width="26" height="26" rx="7" fill="#6366f1"/>
+      <path d="M7 13h12M13 7v12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="hdr-title">Gamelog</div>
+      <div class="hdr-sub">Information Architecture · as-built</div>
+    </div>
+  </div>
+  <div class="hdiv"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="setView('tree')" id="tab-tree">Navigation Tree</button>
+    <button class="tab" onclick="setView('inventory')" id="tab-inventory">Screen Inventory</button>
+    <button class="tab" onclick="setView('issues')" id="tab-issues">⚑ Flagged Issues</button>
+  </div>
+  <div class="hdr-btns" id="tree-btns">
+    <button class="btn" onclick="expandAll()">Expand all</button>
+    <button class="btn" onclick="collapseAll()">Collapse all</button>
+  </div>
+</header>
+
+<div class="stats-strip" id="stats-strip">
+  <div class="stat"><div class="stat-val">15</div><div class="stat-lbl">Routed Screens</div></div>
+  <div class="stat"><div class="stat-val">6</div><div class="stat-lbl">Modals / Sheets</div></div>
+  <div class="stat"><div class="stat-val">2</div><div class="stat-lbl">Global Overlays</div></div>
+  <div class="stat"><div class="stat-val">3</div><div class="stat-lbl">Broken Nav Links</div></div>
+  <div class="stat"><div class="stat-val">25</div><div class="stat-lbl">Flagged Issues</div></div>
+</div>
+
+<div class="main" id="main"></div>
+
+<div class="legend" id="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#7c3aed"></div>Routed screen</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#0284c7"></div>Modal / sheet</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#d97706"></div>Overlay (⌘K)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#c026d3"></div>Persistent widget</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#475569"></div>Navigation chrome</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#059669"></div>State-only (no URL)</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#dc2626"></div>Broken navigation</div>
+</div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+
+const TREE = {
+  id:'chrome',label:'Persistent Chrome',
+  sub:'Sidebar · Global Search · Command Palette — present on every screen',
+  type:'chrome',depth:0,
+  children:[
+    { id:'sidebar',label:'Sidebar',trigger:'8 navigation links + "Add game" button',type:'chrome',depth:0,
+      children:[
+        { id:'library',label:'Library',route:'/',type:'screen',depth:1,
+          children:[
+            { id:'lib-gd',label:'Game Detail',trigger:'click a cover or row',route:'/game/:igdbId',type:'screen',depth:2,
+              children:[
+                { id:'gd-related',label:'Related Games',trigger:'click "See all" / a related-value chip',route:'/game/:igdbId/related',type:'screen',depth:3,children:[] },
+                { id:'gd-log',label:'Log Editor',trigger:'click "Log"',type:'modal',depth:3,children:[] },
+                { id:'gd-atl',label:'Add to List',trigger:'click "Add to list"',type:'modal',depth:3,children:[] }
+              ]
+            },
+            { id:'lib-log',label:'Log Editor',trigger:'quick "Log" action on a cover/row',type:'modal',depth:2,children:[] },
+            { id:'lib-share',label:'Share',trigger:'toolbar "Share" button',type:'modal',depth:2,children:[] }
+          ]
+        },
+        { id:'lists',label:'Lists',route:'/lists',type:'screen',depth:1,
+          children:[
+            { id:'dyn-list',label:'(dynamic list name)',trigger:'click a list card',
+              note:'No URL — local useState in App.tsx. Refreshing the page returns to the list-of-lists screen. The on-screen back arrow resets state rather than using browser history.',
+              type:'state',depth:2,
+              children:[
+                { id:'list-gd',label:'Game Detail',trigger:'click a game in the list',route:'/game/:igdbId',type:'screen',depth:3,children:[] },
+                { id:'list-share',label:'Share',trigger:'list toolbar "Share"',type:'modal',depth:3,children:[] }
+              ]
+            }
+          ]
+        },
+        { id:'systems',label:'Browse Systems',trigger:'On-screen header: "Browse by System"',route:'/systems',type:'screen',depth:1,
+          children:[
+            { id:'platform',label:'(platform, e.g. "Xbox Series X")',trigger:'click a platform tile',route:'/systems/:platformId',type:'screen',depth:2,
+              children:[
+                { id:'plat-gd',label:'Game Detail',trigger:'click a cover/row',route:'/game/:igdbId',type:'screen',depth:3,children:[] },
+                { id:'plat-log',label:'Log Editor',trigger:'quick "Log" action',type:'modal',depth:3,children:[] }
+              ]
+            }
+          ]
+        },
+        { id:'recommend',label:'What to Play',trigger:'On-screen header: "What to Play Next"',route:'/recommend',type:'screen',depth:1,
+          children:[
+            { id:'roulette',label:'Backlog Roulette',trigger:'"Spin Backlog Roulette" button',type:'modal',depth:2,children:[] },
+            { id:'rec-gd',label:'Game Detail',trigger:'"Start Playing" on a recommendation',route:'/game/:igdbId',type:'screen',depth:2,children:[] }
+          ]
+        },
+        { id:'activity',label:'Activity',trigger:'On-screen header: "Activity & Milestones"',route:'/activity',type:'screen',depth:1,
+          children:[
+            { id:'yir',label:'Year in Review',trigger:'gradient CTA button',type:'modal',depth:2,children:[] },
+            { id:'act-gd',label:'Game Detail',trigger:'click a game in the Timeline tab',route:'/game/:igdbId',type:'screen',depth:2,children:[] }
+          ]
+        },
+        { id:'friends',label:'Friends',trigger:'On-screen header: "Compare Libraries"',route:'/friends',type:'screen',depth:1,
+          note:'Dead end — CoverCard renders without onClick here. Game covers are visually identical to other screens but are completely inert.',children:[]
+        },
+        { id:'stats',label:'Stats',route:'/stats',type:'screen',depth:1,
+          note:'Leaf node — no outbound navigation of any kind.',children:[]
+        },
+        { id:'settings',label:'Settings',route:'/settings',type:'screen',depth:1,
+          children:[
+            { id:'steam',label:'Review Steam Import',trigger:'Settings → Platform Integrations → Steam tab → "Fetch from Steam" (requires Steam ID)',
+              route:'/import/steam',type:'screen',depth:2,
+              note:'Only Steam gets a dedicated full-page review step. PSN, Xbox, and GOG complete the same job inline within Settings.',
+              children:[]
+            }
+          ]
+        },
+        { id:'add-game',label:'Add Game',trigger:'Sidebar "Add game" button',type:'modal',depth:1,children:[] }
+      ]
+    },
+    { id:'global-search',label:'Global Search Widget',trigger:'Pinned top-right on every screen except Search Results',type:'widget',depth:0,
+      children:[
+        { id:'search',label:'Search Results',trigger:'press Enter with a non-empty query',route:'/search',type:'screen',depth:1,sole:true,
+          note:'Sole entry point. No Sidebar link, no Command Palette entry, no visible affordance indicating what Enter will do.',
+          children:[]
+        }
+      ]
+    },
+    { id:'cmdpal',label:'Command Palette',trigger:'⌘K / Ctrl+K or "/" when focus is not in a text field — keyboard only, no visible button',type:'overlay',depth:0,
+      children:[
+        { id:'cp-lib',label:'Library',trigger:'Command Palette nav item',route:'/library',type:'broken',
+          brokenNote:'Calls navigate("/library") — route does not exist. Real route is /. Currently 404s.',depth:1,children:[]
+        },
+        { id:'cp-wtp',label:'What to Play',trigger:'Command Palette nav item',route:'/what-to-play',type:'broken',
+          brokenNote:'Calls navigate("/what-to-play") — route does not exist. Real route is /recommend.',depth:1,children:[]
+        },
+        { id:'cp-roul',label:'Spin Backlog Roulette',trigger:'Command Palette action',route:'/what-to-play',type:'broken',
+          brokenNote:'Calls navigate("/what-to-play") — same broken target. Even if fixed to /recommend, this would only navigate to the screen, not open the Backlog Roulette modal.',depth:1,children:[]
+        },
+        { id:'cp-add',label:'Add Game',trigger:'"Add New Game to Library" action',type:'modal',depth:1,children:[] }
+      ]
+    }
+  ]
+};
+
+const GLOBAL_NODES = [
+  { id:'debug',label:'Store Diagnostic Check',trigger:'Direct URL only — no links anywhere in the UI',route:'/debug',type:'screen',depth:'global',sole:true,
+    brokenNote:'Clears the entire local database (db.games.clear(), db.logs.clear(), db.lists.clear()) as part of its self-running test, with no confirmation step. The route is live, unprotected, and completely invisible to the user.',
+    children:[]
+  }
+];
+
+const EP = {
+  library:{ entries:[{t:'Sidebar "Library" link'},{t:'Browser back from anywhere'}], note:'No logo link found — the logo does not navigate anywhere.' },
+  lists:{ entries:[{t:'Sidebar "Lists" link'}] },
+  'dyn-list':{ entries:[{t:'Click a list card from the Lists screen',sole:true}], note:'No deep link — cannot be reached via a direct URL. State is local to App.tsx (openListId useState).' },
+  stats:{ entries:[{t:'Sidebar "Stats" link'}] },
+  recommend:{ entries:[{t:'Sidebar "What to Play" link'}] },
+  activity:{ entries:[{t:'Sidebar "Activity" link'}] },
+  friends:{ entries:[{t:'Sidebar "Friends" link'}] },
+  systems:{ entries:[{t:'Sidebar "Browse Systems" link'}] },
+  platform:{ entries:[{t:'Click a platform tile from Browse by System',sole:true}] },
+  settings:{ entries:[{t:'Sidebar "Settings" link'}] },
+  steam:{ entries:[{t:'Settings → Platform Integrations → Steam tab → "Fetch from Steam" (requires a Steam ID typed in first)',sole:true}] },
+  debug:{ entries:[{t:'Direct URL entry (/debug) — no UI links anywhere in the app',sole:true}] },
+  search:{ entries:[{t:'Press Enter in the Global Search widget with a non-empty query',sole:true}], note:'No Sidebar link, no button, no Command Palette entry. No visible affordance indicates what Enter will do.' },
+  _gameDetail:{ entries:[
+    {t:'Click a cover or row on Library (grid or table)'},
+    {t:'Click a cover or row on Search Results'},
+    {t:'Click a cover or row on Browse by System (top-level or platform-filtered)'},
+    {t:"Click a game in a List's contents"},
+    {t:'Click a game in the Activity Timeline tab'},
+    {t:'Click an item on the Related Games page'},
+    {t:'Click the Spotlight Banner on Library'},
+    {t:'Click a result row in the Global Search dropdown'},
+    {t:'Click a game in the Command Palette "Library Games" results'},
+    {t:'"Start Playing" from a What to Play Next recommendation'}
+  ]},
+  'gd-related':{ entries:[{t:'From Game Detail: click a "see all" style button for the active related-content tab'},{t:'From Game Detail: click a "Series" value chip'}], note:'Only reachable from Game Detail.' },
+  _logEditor:{ entries:[
+    {t:'Quick "Log" action on Library'},
+    {t:'Quick "Log" action on Search Results'},
+    {t:'Quick "Log" action on Browse by System'},
+    {t:'"Log" button on Game Detail'},
+    {t:'Automatically opened after adding a game via the Global Search widget\'s "+" button'}
+  ]},
+  'gd-atl':{ entries:[{t:'"Add to list" button on Game Detail',sole:true}] },
+  _share:{ entries:[{t:'Library toolbar "Share" button (shares the current filtered view)'},{t:"A specific List's toolbar \"Share\" button"}] },
+  roulette:{ entries:[{t:'"Spin Backlog Roulette" button on What to Play Next',sole:true}], note:'The Command Palette has a "Spin Backlog Roulette" action but it navigates to a broken route (/what-to-play) rather than opening this modal.' },
+  yir:{ entries:[{t:'Gradient CTA button on Activity & Milestones',sole:true}] },
+  _addGame:{ entries:[{t:'Sidebar "Add game" button'},{t:'Command Palette "Add New Game to Library" action'}], note:'Both dispatch the same underlying window event.' },
+  cmdpal:{ entries:[{t:'⌘K or Ctrl+K'},{t:'"/" when focus is not in a text field'}], note:'No visible button anywhere triggers it.' },
+  'global-search':{ entries:[{t:'Always visible on every screen except Search Results'}], note:'Can also be focused via a window event (open-global-search), but nothing in the app currently dispatches that event.' }
+};
+// Alias nodes that share canonical entry points
+const EP_ALIASES = {
+  'lib-gd':'_gameDetail','list-gd':'_gameDetail','plat-gd':'_gameDetail','rec-gd':'_gameDetail','act-gd':'_gameDetail',
+  'gd-log':'_logEditor','lib-log':'_logEditor','plat-log':'_logEditor',
+  'lib-share':'_share','list-share':'_share',
+  'add-game':'_addGame','cp-add':'_addGame',
+  'cp-lib':'cp-lib','cp-wtp':'cp-wtp','cp-roul':'cp-roul'
+};
+
+const INVENTORY = [
+  {n:1,label:'Library',route:'/',type:'screen',desc:'Grid or table of every game in the collection; search, sort, status/genre/platform filters, and a "Game of the Week" spotlight banner.'},
+  {n:2,label:'Search Results',route:'/search?q=…',type:'screen',desc:'Full external IGDB catalog search (not a search of the existing library) for finding and adding new games.'},
+  {n:3,label:'Lists',route:'/lists',type:'screen',desc:'Grid of every user-created custom list (ranked or unranked game collections).'},
+  {n:4,label:'(dynamic list name)',route:'/lists — state only',type:'screen',desc:'Contents of one specific list: reorder, rename, remove games, share, delete. No URL — local component state.'},
+  {n:5,label:'Stats',route:'/stats',type:'screen',desc:'Burndown charts and gaming-habit visualizations. No outbound navigation of any kind.'},
+  {n:6,label:'What to Play Next',route:'/recommend',type:'screen',desc:'Intent-based recommendation picks ("something short," "a relaxing RPG") plus the Backlog Roulette trigger.'},
+  {n:7,label:'Activity & Milestones',route:'/activity',type:'screen',desc:'Two tabs: Journal (365-day contribution heatmap + timeline) and Achievements; also launches Year in Review.'},
+  {n:8,label:'Compare Libraries',route:'/friends',type:'screen',desc:'Upload a friend\'s exported backup file; compare overlap, unique games, and "hot takes." Game covers are not clickable here.'},
+  {n:9,label:'Browse by System',route:'/systems',type:'screen',desc:'Library grouped by gaming platform/console, as a grid of platform tiles.'},
+  {n:10,label:'(platform name)',route:'/systems/:platformId',type:'screen',desc:'Library filtered to one platform. Same screen component as #9 in a filtered state.'},
+  {n:11,label:'Settings',route:'/settings',type:'screen',desc:'Three sections: Appearance & Customization, Data Backup & Restore, Platform Integrations & Library Imports.'},
+  {n:12,label:'Review Steam Import',route:'/import/steam',type:'screen',desc:'Dedicated review/confirm step for Steam imports only — shows matched games before committing. PSN/Xbox/GOG do this inline in Settings.'},
+  {n:13,label:'Store Diagnostic Check',route:'/debug',type:'screen',desc:'⚠ Developer smoke-test. No UI links anywhere. Clears the entire local database with no confirmation step.'},
+  {n:14,label:'Game Detail',route:'/game/:igdbId',type:'screen',desc:'Full detail page for one game: metadata, status/rating controls, related-games strip, log and add-to-list actions.'},
+  {n:15,label:'Related Games',route:'/game/:igdbId/related',type:'screen',desc:'Full-page, tabbed browse of Related / DLC / Expansions / Ports / Series / Mods / Bundles for one game.'},
+  {n:16,label:'Add Game',route:'—',type:'modal',desc:'Search IGDB and add a new game to the library, including a natural-language "quick log" mode.'},
+  {n:17,label:'Log Editor',route:'—',type:'modal',desc:'Edit status, rating, dates, platforms, tags, ownership, and notes for one game\'s log entry.'},
+  {n:18,label:'Add to List',route:'—',type:'modal',desc:'Toggle a game\'s membership across existing lists, or create a new list. Accessible from Game Detail only.'},
+  {n:19,label:'Share [Library / List]',route:'—',type:'modal',desc:'Export the current filtered library view, or one specific list, as Markdown, image, or .ics calendar file.'},
+  {n:20,label:'Backlog Roulette',route:'—',type:'modal',desc:'Randomly spins to one Backlog-status game and offers to mark it Playing.'},
+  {n:21,label:'Year in Review',route:'—',type:'modal',desc:'5-slide personal year-in-review summary (hours, completions, favorite genre, etc.).'},
+  {n:22,label:'Command Palette',route:'—',type:'overlay',desc:'⌘K / Ctrl+K / "/". Fuzzy search across navigation destinations, actions, and library games. No visible trigger button.'},
+  {n:23,label:'Global Search Widget',route:'—',type:'widget',desc:'Always visible top-right except on Search Results. Debounced IGDB catalog search with inline dropdown.'}
+];
+
+const ISSUES = [
+  { id:'broken',icon:'🔴',title:'Broken Navigation Targets',open:true,items:[
+    { label:'Command Palette → "Library"',desc:'Calls navigate("/library"). The real route is / (root). Currently 404s / renders nothing matching.',sev:'high' },
+    { label:'Command Palette → "What to Play"',desc:'Calls navigate("/what-to-play"). The real route is /recommend. Broken.',sev:'high' },
+    { label:'Command Palette → "Spin Backlog Roulette"',desc:'Also calls navigate("/what-to-play") — same broken target. Two bugs: the route is wrong, and even if fixed to /recommend, the action would only navigate to the screen, not open the Backlog Roulette modal (which requires a second manual click).',sev:'high' }
+  ]},
+  { id:'labels',icon:'🏷',title:'Label Mismatches Across Nav Surfaces',items:[
+    { label:'/recommend',desc:'Sidebar: "What to Play" · On-screen header: "What to Play Next" · Command Palette: "What to Play"' },
+    { label:'/activity',desc:'Sidebar: "Activity" · On-screen header: "Activity & Milestones" · Command Palette: "Activity & Journal"' },
+    { label:'/friends',desc:'Sidebar: "Friends" · On-screen header: "Compare Libraries" · Command Palette: "Friends & Social"' },
+    { label:'/stats',desc:'Sidebar: "Stats" · On-screen header: "Stats" · Command Palette: "Stats & Insights"' },
+    { label:'/systems',desc:'Sidebar: "Browse Systems" · On-screen header: "Browse by System"' },
+    { label:'/search',desc:'On-screen header: "Search Results" — no Sidebar or Command Palette label to compare against.' }
+  ]},
+  { id:'missing',icon:'🔍',title:'Missing from Nav Surfaces',items:[
+    { label:'"Lists" absent from Command Palette',desc:'Lists is a full Sidebar-level destination but has no entry in the Command Palette Navigation category.' },
+    { label:'"Browse Systems" absent from Command Palette',desc:'Browse Systems is a full Sidebar-level destination with no Command Palette entry.' },
+    { label:'Search Results has no presence except the Enter key',desc:'The only path in is pressing Enter in the Global Search widget. No visible affordance indicates that Enter triggers navigation to a full results page.' }
+  ]},
+  { id:'naming',icon:'🔄',title:'Two Things Named "Search" with Different Jobs',items:[
+    { label:'Global Search widget vs. Command Palette',desc:'Global Search (top-right, always visible) searches the external IGDB catalog to add new games. Command Palette (⌘K) searches navigation destinations, actions, and games already in the library — a different corpus. Different scope, different UI patterns, different triggers. Only the word "search" is shared.' }
+  ]},
+  { id:'deeplink',icon:'🔗',title:'Deep-Link Inconsistency',items:[
+    { label:'Game Detail has a URL; a specific List does not',desc:'Game Detail (/game/:igdbId) is shareable, refreshable, and back-button-safe. A specific list is local useState in App.tsx — refreshing the page returns the user to the list-of-lists screen.' },
+    { label:'On-screen back arrow vs. browser Back may conflict',desc:'The back arrow inside the list view resets local state rather than using browser history, so its behavior may not match what the browser Back button does at the same moment.' },
+    { label:'Library view mode is localStorage, not URL',desc:'Grid vs. table toggle is in localStorage — there is no way to link someone directly to the table view.' },
+    { label:'Three "filter to a sub-view" patterns, three different structures',desc:'/systems/:platformId is fully URL-driven. A specific list is fully state-driven. Library view mode is a localStorage hybrid. Same structural job, three different implementations.' },
+    { label:'None of the 6 modals have a URL',desc:'Add Game, Log Editor, Add to List, Share, Backlog Roulette, and Year in Review are all useState booleans. Refreshing while any is open loses that state entirely.' }
+  ]},
+  { id:'depth',icon:'📐',title:'Depth Inconsistency',items:[
+    { label:'Steam Import gets a dedicated page; PSN/Xbox/GOG do not',desc:'Review Steam Import is 2 clicks deep and is the only platform import with a full-page review step. PSN, Xbox, and GOG complete the equivalent parse → match → preview → confirm sequence entirely inline within Settings. Same underlying job, two structural patterns, different depths.' }
+  ]},
+  { id:'placement',icon:'📌',title:'Placement Ambiguity',items:[
+    { label:'Browse Systems vs. Library\'s platform filter',desc:'Browse Systems is a separate top-level destination with its own grid. Library already has a platform filter in its FilterBar. It\'s not obvious why platform gets a dedicated top-level screen when genre and status filters don\'t.' },
+    { label:'Global Search and Add Game modal do the same job',desc:'Both search IGDB and both end in adding a game to the library, but are triggered completely differently (persistent widget vs. Sidebar button/Command Palette) and are separate component implementations.' },
+    { label:'Backlog Roulette is buried two levels deep but feels top-level',desc:'Structurally nested under Sidebar → What to Play Next → button, yet the Command Palette treats it as a first-class action alongside top-level navigation items.' },
+    { label:'Year in Review has no nav presence despite being a headline feature',desc:'A single CTA button buried inside the Activity screen. No Sidebar link, no Command Palette entry of its own. Yet the Command Palette\'s description of the Activity screen explicitly calls out "Year in Review" as a feature.' }
+  ]},
+  { id:'behavior',icon:'⚙',title:'Same Component, Inconsistent Behavior',items:[
+    { label:'CoverCard is clickable everywhere except Friends',desc:'CoverCard opens Game Detail on click on Library, Search Results, Browse by System, and List contents — but is rendered without an onClick handler on the Compare Libraries (Friends) screen. Visually identical, but completely inert.' }
+  ]},
+  { id:'hidden',icon:'⚠',title:'Hidden Route with Destructive Side Effect',items:[
+    { label:'/debug — Store Diagnostic Check',desc:'Zero UI links anywhere in the app — only reachable by typing the URL directly. Automatically clears the entire local database (db.games.clear(), db.logs.clear(), db.lists.clear()) as part of its self-running test, with no confirmation step. The route is live and unprotected.',sev:'high' }
+  ]}
+];
+
+// ═══════════════ STATE ═══════════════
+
+let view = 'tree';
+let selectedId = null;
+let invFilter = 'all';
+let expanded = new Set(['chrome','sidebar']);
+
+// ═══════════════ HELPERS ═══════════════
+
+function findNode(tree, id) {
+  if (tree.id === id) return tree;
+  if (tree.children) for (const c of tree.children) { const f = findNode(c,id); if(f) return f; }
+  return null;
+}
+function collectIds(tree) {
+  const ids = [tree.id];
+  if (tree.children) for (const c of tree.children) ids.push(...collectIds(c));
+  return ids;
+}
+function getEP(id) {
+  const alias = EP_ALIASES[id];
+  const key = alias || id;
+  return EP[key] || null;
+}
+const TYPE_BADGE = {screen:'b-screen',modal:'b-modal',overlay:'b-overlay',chrome:'b-chrome',broken:'b-broken',state:'b-state',widget:'b-widget'};
+const TYPE_LABEL = {screen:'Screen',modal:'Modal',overlay:'Overlay',chrome:'Chrome',broken:'Broken',state:'State-only',widget:'Widget'};
+const TYPE_FULL = {screen:'Routed Screen',modal:'Modal / Sheet',overlay:'Keyboard Overlay',chrome:'Navigation Chrome',broken:'🔴 Broken Link',state:'State-only (No URL)',widget:'Persistent Widget'};
+
+// ═══════════════ RENDER ═══════════════
+
+function render() {
+  const main = document.getElementById('main');
+  const legend = document.getElementById('legend');
+  const treeBtns = document.getElementById('tree-btns');
+  const statsStrip = document.getElementById('stats-strip');
+
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+view).classList.add('active');
+
+  if (view === 'tree') {
+    legend.style.display = 'flex';
+    treeBtns.style.display = 'flex';
+    statsStrip.style.display = 'flex';
+    main.innerHTML = `
+      <div class="tree-panel" id="tree-panel">
+        <div class="tree-root">
+          ${renderNode(TREE, 0)}
+          <div class="global-section">
+            <div class="depth-hdr">Depth "Global" — not part of the Sidebar tree</div>
+            ${GLOBAL_NODES.map(n => renderNode(n, 0)).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="detail-panel" id="detail-panel">${renderDetail()}</div>`;
+  } else if (view === 'inventory') {
+    legend.style.display = 'none';
+    treeBtns.style.display = 'none';
+    statsStrip.style.display = 'flex';
+    main.innerHTML = renderInventory();
+  } else {
+    legend.style.display = 'none';
+    treeBtns.style.display = 'none';
+    statsStrip.style.display = 'none';
+    main.innerHTML = renderIssues();
+  }
+}
+
+function renderNode(n, indent) {
+  const hasKids = n.children && n.children.length > 0;
+  const isExp = expanded.has(n.id);
+  const isSel = n.id === selectedId;
+
+  const toggle = hasKids
+    ? `<div class="ntog">▶</div>`
+    : `<div class="ntog leaf" style="opacity:.25">—</div>`;
+
+  const bc = TYPE_BADGE[n.type] || 'b-chrome';
+  const bl = TYPE_LABEL[n.type] || n.type;
+  const routeHtml = n.route ? `<span class="rbadge${n.type==='broken'?' err':''}">${n.route}</span>` : '';
+  const soleHtml = n.sole ? `<span class="badge b-warn" style="font-size:9px">⚠ Sole entry</span>` : '';
+
+  const triggerHtml = (n.trigger || n.sub)
+    ? `<div class="ntrigger">${n.trigger || n.sub}</div>` : '';
+
+  const noteHtml = n.brokenNote
+    ? `<div class="nnote err">🔴 ${n.brokenNote}</div>`
+    : n.note ? `<div class="nnote">⚠ ${n.note}</div>` : '';
+
+  const kidsHtml = hasKids && isExp
+    ? `<div class="node-children">${n.children.map(c => renderNode(c, indent+1)).join('')}</div>` : '';
+
+  let cls = 'node';
+  if (isSel) cls += ' selected';
+  if (isExp && hasKids) cls += ' expanded';
+  if (n.type === 'broken') cls += ' broken-node';
+
+  return `<div class="node-wrap" id="nw-${n.id}">
+    <div class="${cls}" onclick="nodeClick('${n.id}',${hasKids})">
+      ${toggle}
+      <div class="ncontent">
+        <div class="nhead">
+          <span class="badge ${bc}">${bl}</span>
+          <span class="node-label">${n.label}</span>
+          ${routeHtml}${soleHtml}
+        </div>
+        ${triggerHtml}${noteHtml}
+      </div>
+    </div>
+    ${kidsHtml}
+  </div>`;
+}
+
+function renderDetail() {
+  if (!selectedId) return `
+    <div class="d-empty">
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+        <circle cx="19" cy="19" r="17" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <path d="M19 11v8M19 24v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p>Click any node in the tree to see its entry points and details here.</p>
+    </div>`;
+
+  const n = findNode(TREE, selectedId) || GLOBAL_NODES.find(x => x.id === selectedId);
+  if (!n) return '<div class="d-empty"><p>Node not found.</p></div>';
+
+  const ep = getEP(selectedId);
+
+  const metaHtml = `<div class="d-meta">
+    <span class="badge ${TYPE_BADGE[n.type]||'b-chrome'}">${TYPE_FULL[n.type]||n.type}</span>
+    ${n.route ? `<span class="rbadge${n.type==='broken'?' err':''}">${n.route}</span>` : ''}
+    ${n.sole ? `<span class="badge b-warn">⚠ Sole entry</span>` : ''}
+  </div>`;
+
+  const trigHtml = n.trigger ? `<div class="d-trigger">Via: ${n.trigger}</div>` : '';
+
+  let noteSec = '';
+  if (n.brokenNote) {
+    noteSec = `<div class="d-sec"><div class="d-sec-title">Known Issue</div>
+      <div class="note-card err"><span>🔴</span><span>${n.brokenNote}</span></div></div>`;
+  } else if (n.note) {
+    noteSec = `<div class="d-sec"><div class="d-sec-title">Note</div>
+      <div class="note-card"><span>⚠</span><span>${n.note}</span></div></div>`;
+  }
+
+  let epSec = '';
+  if (ep) {
+    const items = ep.entries.map(e => `
+      <div class="ep-item${e.sole?' sole':''}">
+        <div class="ep-dot${e.sole?' sole':''}"></div>
+        <span>${e.t}${e.sole?' <strong>(sole entry point)</strong>':''}</span>
+      </div>`).join('');
+    const epNote = ep.note ? `<div class="note-card info" style="margin-top:4px"><span>ℹ</span><span>${ep.note}</span></div>` : '';
+    epSec = `<div class="d-sec">
+      <div class="d-sec-title">All Entry Points (${ep.entries.length})</div>
+      ${items}${epNote}
+    </div>`;
+  } else if (n.type !== 'chrome') {
+    epSec = `<div class="d-sec"><div class="d-sec-title">Entry Points</div>
+      <div class="ep-item"><div class="ep-dot"></div><span>See trigger in the parent node above</span></div>
+    </div>`;
+  }
+
+  return `<div class="d-content">
+    <div class="d-hdr">
+      <div class="d-name">${n.label}</div>
+      ${metaHtml}${trigHtml}
+    </div>
+    ${noteSec}${epSec}
+  </div>`;
+}
+
+function renderInventory() {
+  const rows = invFilter === 'all' ? INVENTORY : INVENTORY.filter(r => r.type === invFilter);
+  const counts = {screen:15,modal:6,overlay:1,widget:1};
+  const filters = [
+    {k:'all',l:`All (${INVENTORY.length})`},
+    {k:'screen',l:`Screens (${counts.screen})`},
+    {k:'modal',l:`Modals (${counts.modal})`},
+    {k:'overlay',l:`Overlays (${counts.overlay})`},
+    {k:'widget',l:`Widgets (${counts.widget})`}
+  ];
+
+  const fhtml = filters.map(f =>
+    `<button class="filt-btn${invFilter===f.k?' active':''}" onclick="setFilter('${f.k}')">${f.l}</button>`
+  ).join('');
+
+  const rhtml = rows.map(r => `<tr>
+    <td class="td-n">${r.n}</td>
+    <td><span class="badge ${TYPE_BADGE[r.type]||''}">${TYPE_LABEL[r.type]||r.type}</span></td>
+    <td style="font-weight:500">${r.label}</td>
+    <td class="td-route">${r.route}</td>
+    <td class="td-desc">${r.desc}</td>
+  </tr>`).join('');
+
+  return `<div class="inv-view">
+    <div class="inv-filters">${fhtml}</div>
+    <div class="inv-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Type</th><th>UI Label</th><th>Route</th><th>Description</th>
+        </tr></thead>
+        <tbody>${rhtml}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function renderIssues() {
+  const total = ISSUES.reduce((s,g) => s+g.items.length, 0);
+  document.getElementById('tab-issues').textContent = `⚑ Flagged Issues (${total})`;
+
+  const groups = ISSUES.map(g => {
+    const items = g.items.map(item => `<div class="iss-item">
+      ${item.sev==='high' ? '<span class="sev-high">High severity</span>' : ''}
+      <div class="iss-ilbl">${item.label}</div>
+      <div class="iss-idesc">${item.desc}</div>
+    </div>`).join('');
+
+    return `<div class="iss-group${g.open?' open':''}" id="ig-${g.id}">
+      <div class="iss-ghdr" onclick="toggleGroup('${g.id}')">
+        <span class="iss-gicon">${g.icon}</span>
+        <span class="iss-gtitle">${g.title}</span>
+        <span class="iss-cnt">${g.items.length}</span>
+        <span class="iss-chev">▶</span>
+      </div>
+      <div class="iss-gbody">${items}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="iss-view">${groups}</div>`;
+}
+
+// ═══════════════ EVENTS ═══════════════
+
+function nodeClick(id, hasKids) {
+  if (hasKids) {
+    if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
+  }
+  selectedId = id;
+  render();
+  setTimeout(() => {
+    const dp = document.getElementById('detail-panel');
+    if (dp) dp.scrollTop = 0;
+  }, 0);
+}
+
+function setView(v) { view = v; render(); }
+function setFilter(f) { invFilter = f; render(); }
+
+function expandAll() {
+  const ids = collectIds(TREE);
+  GLOBAL_NODES.forEach(n => ids.push(...collectIds(n)));
+  expanded = new Set(ids);
+  render();
+}
+
+function collapseAll() {
+  expanded = new Set();
+  render();
+}
+
+function toggleGroup(id) {
+  const el = document.getElementById('ig-'+id);
+  if (el) el.classList.toggle('open');
+}
+
+render();
+</script>
+</body>
+</html>
