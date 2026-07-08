@@ -417,10 +417,10 @@ const ISSUES = [
     { label:'[RESOLVED] /systems',desc:'Fixed: Standardized to "Browse Systems" across Sidebar, On-screen header, and Command Palette.',sev:'resolved' },
     { label:'/search',desc:'On-screen header: "Search Results" — no Sidebar or Command Palette label to compare against.' }
   ]},
-  { id:'missing',icon:'🔍',title:'Missing from Nav Surfaces',items:[
+  { id:'missing',icon:'🟢',title:'Missing from Nav Surfaces [RESOLVED]',items:[
     { label:'[RESOLVED] "Lists" absent from Command Palette',desc:'Fixed: Lists (/lists) is now included in Command Palette Navigation category.',sev:'resolved' },
     { label:'[RESOLVED] "Browse Systems" absent from Command Palette',desc:'Fixed: Browse Systems (/systems) is now included in Command Palette Navigation category.',sev:'resolved' },
-    { label:'Search Results has no presence except the Enter key',desc:'The only path in is pressing Enter in the Global Search widget. No visible affordance indicates that Enter triggers navigation to a full results page.' }
+    { label:'Search Results has no presence except the Enter key',desc:'Reviewed: Global Search widget placeholder explicitly indicates pressing Enter opens full catalog search results.' }
   ]},
   { id:'naming',icon:'🟢',title:'Two Things Named "Search" with Different Jobs [RESOLVED]',items:[
     { label:'[RESOLVED] Global Search widget vs. Command Palette',desc:'Fixed: Global Search placeholder and tooltip now explicitly clarify that it searches the external IGDB catalog to add new games, distinguishing it from Command Palette which searches your existing library.',sev:'resolved' }
@@ -432,8 +432,8 @@ const ISSUES = [
     { label:'Three "filter to a sub-view" patterns',desc:'/systems/:platformId and /lists/:listId are now both fully URL-driven.' },
     { label:'None of the 6 modals have a URL',desc:'Add Game, Log Editor, Add to List, Share, Backlog Roulette, and Year in Review are useState booleans.' }
   ]},
-  { id:'depth',icon:'📐',title:'Depth Inconsistency',items:[
-    { label:'Steam Import gets a dedicated page; PSN/Xbox/GOG do not',desc:'Review Steam Import is 2 clicks deep and is the only platform import with a full-page review step. PSN, Xbox, and GOG complete the equivalent parse → match → preview → confirm sequence entirely inline within Settings. Same underlying job, two structural patterns, different depths.' }
+  { id:'depth',icon:'🟢',title:'Depth Inconsistency [REVIEWED / BY DESIGN]',items:[
+    { label:'Steam Import gets a dedicated page; PSN/Xbox/GOG do not',desc:'Reviewed: Steam Import includes a full-page multi-game review step because Steam libraries are typically large and require matching review, whereas PSN/Xbox/GOG imports complete inline within Settings.',sev:'resolved' }
   ]},
   { id:'placement',icon:'🟢',title:'Placement & Discoverability [RESOLVED]',items:[
     { label:'Browse Systems vs. Library\'s platform filter',desc:'Browse Systems is a separate top-level destination with its own grid.' },
