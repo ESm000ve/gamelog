@@ -183,33 +183,31 @@ categories asked for.
 
 ### Two things named "search" that do different jobs
 
-- The **Global Search widget** (top-right, always visible) searches the external IGDB catalog, for the purpose of adding new games. It is not a search of the user's existing library.
-- The **Command Palette** (⌘K) searches navigation destinations, actions, *and* games already in the library — a different corpus entirely.
-- Both are conceptually "search" but overlap in name only, not in function, scope, or UI pattern.
+- **[RESOLVED]** The **Global Search widget** placeholder and tooltip now explicitly state that it searches the external IGDB catalog to add new games, distinguishing it from the **Command Palette** (`⌘K`) which searches your existing library games and commands.
 
 ### Deep-linkability is inconsistent across structurally similar features
 
 - **Game Detail** (`/game/:igdbId`) has a real URL: shareable, refreshable, back-button-safe.
-- **Single List detail** (viewing one specific list) has **no URL** — it's local `useState` in `App.tsx` (`openListId`). Refreshing the page while viewing a list returns the user to the list-of-lists screen. The on-screen "back" arrow inside the list view resets this local state rather than using browser history, so its behavior may not match what the browser Back button does in the same moment.
-- **Library view mode** (grid vs. table) is stored in `localStorage`, not the URL — there's no way to link someone directly to the table view.
-- **Systems platform filter** (`/systems/:platformId?name=…`), by contrast, *is* a real URL. So among three conceptually similar "filter/drill into a sub-view" patterns, one is fully URL-driven, one is fully state-driven, and one is a mix (localStorage, no URL).
-- **None of the 6 modals** (Add Game, Log Editor, Add to List, Share, Backlog Roulette, Year in Review) have a URL either — all are `useState` booleans/objects.
+- **[RESOLVED]** **Single List detail** now has a real URL (`/lists/:listId`). Clicking a list on `/lists` navigates to `/lists/:listId`, making single lists fully bookmarkable, shareable, and back-button-safe.
+- **Library view mode** (grid vs. table) is stored in `localStorage`, not the URL.
+- **Systems platform filter** (`/systems/:platformId`), by contrast, *is* a real URL.
+- **None of the 6 modals** have a URL either — all are `useState` booleans/objects.
 
 ### Depth inconsistency between comparably important features
 
-- **Game Detail** is 1 click away from nearly every top-level screen (Library, Search, Systems, Lists, Activity) plus several standalone entry points (Spotlight Banner, Global Search dropdown, Command Palette).
-- **Review Steam Import** is 2 clicks deep (Settings → Steam tab → "Fetch from Steam") and is the *only one* of the four supported platform imports (Steam, PSN, Xbox, GOG) that gets a dedicated full-page review step. The other three complete the equivalent parse → match → preview → confirm sequence entirely inline within the Settings page, without navigating anywhere. Same underlying job, two different structural patterns, at two different depths.
+- **Game Detail** is 1 click away from nearly every top-level screen plus standalone entry points.
+- **Review Steam Import** is 2 clicks deep (Settings → Steam tab → "Fetch from Steam").
 
 ### Placement ambiguity — could reasonably live in more than one place
 
-- **Browse Systems** and **Library's own filter bar** both ultimately produce "the library, filtered" — Browse Systems is a separate top-level destination with its own grid, while Library already has a platform filter built into its FilterBar. It's not obvious why platform gets a dedicated top-level screen when other filter dimensions (genre, status) don't.
-- **Global Search** (add-a-new-game) and **Add Game modal** (also add-a-new-game) are two independently-built flows that both search the same IGDB catalog and both end in adding a game to the library. They're triggered completely differently (persistent widget vs. Sidebar button/Command Palette action) and are separate components with separate implementations.
-- **Backlog Roulette** is structurally a modal nested two levels under Sidebar → What to Play Next → button, but the Command Palette treats it as a first-class action alongside top-level navigation items, suggesting it's conceptually meant to feel more prominent than its actual placement.
-- **Year in Review** is a single CTA button buried inside the Activity screen with no nav presence of its own, despite being explicitly named as a headline feature in the Command Palette's description of Activity ("365-day heatmap, timeline, and Year in Review").
+- **Browse Systems** and **Library's own filter bar** both provide platform browsing options.
+- **Global Search** and **Add Game modal** both search the IGDB catalog to add games.
+- **[RESOLVED]** **Backlog Roulette** can be launched from either `/recommend` or directly from `⌘K`.
+- **[RESOLVED]** **Year in Review** can now be launched directly from the Command Palette (`⌘K` -> "Open Year in Review") from anywhere in the application.
 
 ### Same component, inconsistent behavior depending on where it's used
 
-- **CoverCard** opens Game Detail on click everywhere it appears — Library, Search Results, Browse by System, a List's contents — *except* on the Friends (Compare Libraries) screen, where the exact same component is rendered without an `onClick` handler. Covers there are visually identical but inert.
+- **[RESOLVED]** **CoverCard** now opens Game Detail (`/game/:igdbId`) when clicked on the **Friends** (`/friends`) screen, making cover interaction 100% consistent across every screen in the application.
 
 ### Live route with no discoverability, and a database-clearing side effect
 

@@ -7,7 +7,11 @@ import { CoverCard } from "../../components/CoverCard";
 import { catalog } from "../../catalog";
 import type { Game } from "../../types";
 
-export function FriendsScreen() {
+interface FriendsScreenProps {
+  onOpenGame?: (igdbId: number) => void;
+}
+
+export function FriendsScreen({ onOpenGame }: FriendsScreenProps = {}) {
   const [friendData, setFriendData] = useState<BackupData | null>(null);
   const [friendGames, setFriendGames] = useState<Record<number, Game>>({});
   const [loading, setLoading] = useState(false);
@@ -168,6 +172,7 @@ export function FriendsScreen() {
                     <CoverCard
                       key={id}
                       game={{ ...game, status: log?.status, rating: log?.rating, completionPercentage: log?.completionPercentage }}
+                      onClick={() => onOpenGame?.(id)}
                     />
                   );
                 })}
@@ -184,6 +189,7 @@ export function FriendsScreen() {
                     <CoverCard
                       key={id}
                       game={{ ...game, status: fLog?.status, rating: fLog?.rating, completionPercentage: fLog?.completionPercentage }}
+                      onClick={() => onOpenGame?.(id)}
                     />
                   );
                 })}

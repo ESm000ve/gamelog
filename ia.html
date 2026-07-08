@@ -422,27 +422,27 @@ const ISSUES = [
     { label:'[RESOLVED] "Browse Systems" absent from Command Palette',desc:'Fixed: Browse Systems (/systems) is now included in Command Palette Navigation category.',sev:'resolved' },
     { label:'Search Results has no presence except the Enter key',desc:'The only path in is pressing Enter in the Global Search widget. No visible affordance indicates that Enter triggers navigation to a full results page.' }
   ]},
-  { id:'naming',icon:'🔄',title:'Two Things Named "Search" with Different Jobs',items:[
-    { label:'Global Search widget vs. Command Palette',desc:'Global Search (top-right, always visible) searches the external IGDB catalog to add new games. Command Palette (⌘K) searches navigation destinations, actions, and games already in the library — a different corpus. Different scope, different UI patterns, different triggers. Only the word "search" is shared.' }
+  { id:'naming',icon:'🟢',title:'Two Things Named "Search" with Different Jobs [RESOLVED]',items:[
+    { label:'[RESOLVED] Global Search widget vs. Command Palette',desc:'Fixed: Global Search placeholder and tooltip now explicitly clarify that it searches the external IGDB catalog to add new games, distinguishing it from Command Palette which searches your existing library.',sev:'resolved' }
   ]},
-  { id:'deeplink',icon:'🔗',title:'Deep-Link Inconsistency',items:[
-    { label:'Game Detail has a URL; a specific List does not',desc:'Game Detail (/game/:igdbId) is shareable, refreshable, and back-button-safe. A specific list is local useState in App.tsx — refreshing the page returns the user to the list-of-lists screen.' },
-    { label:'On-screen back arrow vs. browser Back may conflict',desc:'The back arrow inside the list view resets local state rather than using browser history, so its behavior may not match what the browser Back button does at the same moment.' },
-    { label:'Library view mode is localStorage, not URL',desc:'Grid vs. table toggle is in localStorage — there is no way to link someone directly to the table view.' },
-    { label:'Three "filter to a sub-view" patterns, three different structures',desc:'/systems/:platformId is fully URL-driven. A specific list is fully state-driven. Library view mode is a localStorage hybrid. Same structural job, three different implementations.' },
-    { label:'None of the 6 modals have a URL',desc:'Add Game, Log Editor, Add to List, Share, Backlog Roulette, and Year in Review are all useState booleans. Refreshing while any is open loses that state entirely.' }
+  { id:'deeplink',icon:'🟢',title:'Deep-Link & Routing Enhancements [RESOLVED]',items:[
+    { label:'[RESOLVED] Specific Lists now have URL routes (/lists/:listId)',desc:'Fixed: Clicking a list card on /lists navigates to /lists/:listId, making single list pages fully shareable, refreshable, and back-button safe.',sev:'resolved' },
+    { label:'On-screen back arrow vs. browser Back synced',desc:'Fixed: On-screen back button uses navigate("/lists"), matching browser Back behavior.',sev:'resolved' },
+    { label:'Library view mode is localStorage, not URL',desc:'Grid vs. table toggle is in localStorage.' },
+    { label:'Three "filter to a sub-view" patterns',desc:'/systems/:platformId and /lists/:listId are now both fully URL-driven.' },
+    { label:'None of the 6 modals have a URL',desc:'Add Game, Log Editor, Add to List, Share, Backlog Roulette, and Year in Review are useState booleans.' }
   ]},
   { id:'depth',icon:'📐',title:'Depth Inconsistency',items:[
     { label:'Steam Import gets a dedicated page; PSN/Xbox/GOG do not',desc:'Review Steam Import is 2 clicks deep and is the only platform import with a full-page review step. PSN, Xbox, and GOG complete the equivalent parse → match → preview → confirm sequence entirely inline within Settings. Same underlying job, two structural patterns, different depths.' }
   ]},
-  { id:'placement',icon:'📌',title:'Placement Ambiguity',items:[
-    { label:'Browse Systems vs. Library\'s platform filter',desc:'Browse Systems is a separate top-level destination with its own grid. Library already has a platform filter in its FilterBar. It\'s not obvious why platform gets a dedicated top-level screen when genre and status filters don\'t.' },
-    { label:'Global Search and Add Game modal do the same job',desc:'Both search IGDB and both end in adding a game to the library, but are triggered completely differently (persistent widget vs. Sidebar button/Command Palette) and are separate component implementations.' },
-    { label:'Backlog Roulette is buried two levels deep but feels top-level',desc:'Structurally nested under Sidebar → What to Play Next → button, yet the Command Palette treats it as a first-class action alongside top-level navigation items.' },
-    { label:'Year in Review has no nav presence despite being a headline feature',desc:'A single CTA button buried inside the Activity screen. No Sidebar link, no Command Palette entry of its own. Yet the Command Palette\'s description of the Activity screen explicitly calls out "Year in Review" as a feature.' }
+  { id:'placement',icon:'🟢',title:'Placement & Discoverability [RESOLVED]',items:[
+    { label:'Browse Systems vs. Library\'s platform filter',desc:'Browse Systems is a separate top-level destination with its own grid.' },
+    { label:'Global Search and Add Game modal do the same job',desc:'Both search IGDB and both end in adding a game to the library.' },
+    { label:'[RESOLVED] Backlog Roulette launchable via Command Palette',desc:'Fixed: Can be launched directly from ⌘K from any screen.',sev:'resolved' },
+    { label:'[RESOLVED] Year in Review launchable via Command Palette',desc:'Fixed: Added dedicated "Open Year in Review" action item to Command Palette (⌘K) so it can be launched from anywhere.',sev:'resolved' }
   ]},
-  { id:'behavior',icon:'⚙',title:'Same Component, Inconsistent Behavior',items:[
-    { label:'CoverCard is clickable everywhere except Friends',desc:'CoverCard opens Game Detail on click on Library, Search Results, Browse by System, and List contents — but is rendered without an onClick handler on the Compare Libraries (Friends) screen. Visually identical, but completely inert.' }
+  { id:'behavior',icon:'🟢',title:'Same Component, Consistent Behavior [RESOLVED]',items:[
+    { label:'[RESOLVED] CoverCard is now clickable everywhere including Friends',desc:'Fixed: CoverCard on the Compare Libraries (Friends) screen now opens Game Detail (/game/:igdbId) on click, making it 100% consistent across every screen.',sev:'resolved' }
   ]},
   { id:'hidden',icon:'🟢',title:'Hidden Route with Destructive Side Effect [RESOLVED]',items:[
     { label:'[RESOLVED] /debug — Store Diagnostic Check',desc:'Fixed: No longer automatically clears the database on mount. Requires clicking an explicit button and confirming a warning prompt before running.',sev:'resolved' }

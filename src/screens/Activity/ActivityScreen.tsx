@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../../db/schema";
 import { evaluateAchievements } from "../../services/achievements";
 import { ContributionHeatmap } from "./ContributionHeatmap";
@@ -17,6 +17,16 @@ export function ActivityScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [wrappedOpen, setWrappedOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && (location.state as { openYearInReview?: boolean }).openYearInReview) {
+      setWrappedOpen(true);
+    }
+    const handleOpen = () => setWrappedOpen(true);
+    window.addEventListener("gamelog:open-year-in-review", handleOpen);
+    return () => window.removeEventListener("gamelog:open-year-in-review", handleOpen);
+  }, [location.state]);
 
   const games = useLiveQuery(() => db.games.toArray()) ?? [];
   const logs = useLiveQuery(() => db.logs.toArray()) ?? [];

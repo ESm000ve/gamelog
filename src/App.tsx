@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from "react-router-dom";
 import { Sidebar } from "./shell/Sidebar";
 import { LibraryScreen } from "./screens/Library/LibraryScreen";
 import { DebugStoreScreen } from "./screens/DebugStoreScreen";
@@ -29,6 +29,19 @@ import "./styles/index.css";
 
 interface LogEditorTarget { game: Game; log: Log; prefill?: Partial<Log>; }
 interface AddToListTarget { igdbId: number; title: string; }
+
+function SingleListRoute({ onOpenGame }: { onOpenGame: (igdbId: number) => void }) {
+  const { listId } = useParams();
+  const navigate = useNavigate();
+  if (!listId) return null;
+  return (
+    <SingleListScreen
+      listId={listId}
+      onBack={() => navigate("/lists")}
+      onOpenGame={onOpenGame}
+    />
+  );
+}
 
 function AppInner() {
   const navigate = useNavigate();
@@ -90,7 +103,6 @@ function AppInner() {
   const [addGameOpen,     setAddGameOpen]     = useState(false);
   const [logEditorTarget, setLogEditorTarget] = useState<LogEditorTarget | null>(null);
   const [addToListTarget, setAddToListTarget] = useState<AddToListTarget | null>(null);
-  const [openListId,      setOpenListId]      = useState<string | null>(null);
 
   useEffect(() => {
     const handleOpenAdd = () => setAddGameOpen(true);
@@ -122,20 +134,8 @@ function AppInner() {
       <Routes>
         <Route path="/" element={<LibraryScreen onAddGame={openAddGame} onOpenLog={openLogEditor} onOpenGame={openGame} />} />
         <Route path="/search" element={<SearchScreen onOpenGame={openGame} onOpenLog={openLogEditor} />} />
-        <Route
-          path="/lists"
-          element={
-            openListId ? (
-              <SingleListScreen
-                listId={openListId}
-                onBack={() => setOpenListId(null)}
-                onOpenGame={openGame}
-              />
-            ) : (
-              <ListsScreen onOpenList={(id) => setOpenListId(id)} />
-            )
-          }
-        />
+        <Route path="/lists" element={<ListsScreen onOpenList={(id) => navigate(`/lists/${id}`)} />} />
+        <Route path="/lists/:listId" element={<SingleListRoute onOpenGame={openGame} />} />
         <Route path="/stats" element={<StatsScreen />} />
         <Route path="/recommend" element={<RecommendScreen />} />
         <Route path="/activity" element={<ActivityScreen />} />

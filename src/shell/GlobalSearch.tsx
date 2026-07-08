@@ -157,7 +157,8 @@ export function GlobalSearch({ onGameAdded }: GlobalSearchProps) {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Add a game…"
+            placeholder="Search IGDB catalog to add a game… (Enter for full results)"
+            title="Search external IGDB catalog to add new games to your library"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);

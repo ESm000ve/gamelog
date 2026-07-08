@@ -146,6 +146,17 @@ export function CommandPalette() {
         window.dispatchEvent(new CustomEvent("gamelog:open-roulette"));
       },
     },
+    {
+      id: "act-year-in-review",
+      category: "Actions",
+      title: "Open Year in Review",
+      subtitle: "View your annual gaming story and wrapped slides",
+      icon: <Trophy size={18} color="var(--apple-yellow)" />,
+      onSelect: () => {
+        navigate("/activity", { state: { openYearInReview: true } });
+        window.dispatchEvent(new CustomEvent("gamelog:open-year-in-review"));
+      },
+    },
   ];
 
   const gameItems: CommandItem[] = (games || []).slice(0, 30).map((game) => {
