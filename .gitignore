@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-electron/
+release/
+storybook-static/
+
+# Env / secrets
+.env
+.env.local
+
+# OS / editor cruft
+.DS_Store
+._*
+*.log
+npm-debug.log*
+
+# Cowork / Claude tooling (not part of the app)
+.agents/
+.claude/
+apple-hig/
+ui-design/
+ui-design-system/
+ux-researcher/
+guidelines/
