@@ -45,12 +45,22 @@ export function attachAiRoutes(app: any) {
                 return;
               }
 
-              const data = await geminiFetch('text-embedding-004:embedContent', {
-                model: 'models/text-embedding-004',
-                content: {
-                  parts: [{ text }]
-                }
-              });
+              let data;
+              try {
+                data = await geminiFetch('gemini-embedding-001:embedContent', {
+                  model: 'models/gemini-embedding-001',
+                  content: {
+                    parts: [{ text }]
+                  }
+                });
+              } catch (fallbackErr) {
+                data = await geminiFetch('gemini-embedding-2-preview:embedContent', {
+                  model: 'models/gemini-embedding-2-preview',
+                  content: {
+                    parts: [{ text }]
+                  }
+                });
+              }
 
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ embedding: data.embedding.values }));
