@@ -387,7 +387,7 @@ function SystemPicker() {
             <Gamepad2 size={22} />
           </div>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--apple-label)" }}>Browse by System</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: "var(--apple-label)" }}>Browse Systems</h1>
             <p style={{ fontSize: "var(--font-size-base)", color: "var(--apple-secondary-label)", margin: "2px 0 0" }}>
               {platforms.length > 0 ? `${platforms.length} systems` : "Loading..."}
             </p>

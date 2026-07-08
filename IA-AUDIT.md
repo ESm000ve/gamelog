@@ -168,12 +168,12 @@ categories asked for.
 
 ### Same destination, different label depending on where you look
 
-- **Route `/`**: Sidebar says "Library," on-screen header says "Library." (Consistent — noted as the baseline for comparison.)
-- **Route `/recommend`**: Sidebar says "What to Play," on-screen header says "What to Play Next," Command Palette nav item says "What to Play."
-- **Route `/activity`**: Sidebar says "Activity," on-screen header says "Activity & Milestones," Command Palette nav item says "Activity & Journal."
-- **Route `/friends`**: Sidebar says "Friends," on-screen header says "Compare Libraries," Command Palette nav item says "Friends & Social."
-- **Route `/stats`**: Sidebar says "Stats," on-screen header says "Stats," Command Palette nav item says "Stats & Insights."
-- **Route `/systems`**: Sidebar says "Browse Systems," on-screen header says "Browse by System."
+- **[RESOLVED]** **Route `/`**: "Library" across all surfaces.
+- **[RESOLVED]** **Route `/recommend`**: Standardized to **"What to Play"** across Sidebar, on-screen header, and Command Palette.
+- **[RESOLVED]** **Route `/activity`**: Standardized to **"Activity"** across Sidebar, on-screen header, and Command Palette.
+- **[RESOLVED]** **Route `/friends`**: Standardized to **"Friends"** across Sidebar, on-screen header, and Command Palette.
+- **[RESOLVED]** **Route `/stats`**: Standardized to **"Stats"** across Sidebar, on-screen header, and Command Palette.
+- **[RESOLVED]** **Route `/systems`**: Standardized to **"Browse Systems"** across Sidebar, on-screen header, and Command Palette.
 - **Route `/search`**: on-screen header says "Search Results"; this destination has no label anywhere else (no Sidebar entry, no Command Palette entry) to compare it against.
 
 ### Missing from one nav surface but not another

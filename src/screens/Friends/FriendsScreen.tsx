@@ -102,7 +102,7 @@ export function FriendsScreen() {
         }}
       >
         <h1 style={{ fontFamily: "var(--apple-font-display)", fontSize: 24, fontWeight: 700, color: "var(--apple-label)", letterSpacing: "-0.015em" }}>
-          Compare Libraries
+          Friends
         </h1>
         <p style={{ color: "var(--apple-tertiary-label)", fontSize: "var(--font-size-base)", marginTop: "var(--space-1)"}}>
           Upload a friend's library JSON export to see what you have in common.

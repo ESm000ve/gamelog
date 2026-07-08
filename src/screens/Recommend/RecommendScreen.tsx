@@ -75,7 +75,7 @@ export function RecommendScreen() {
         <header style={{ marginBottom: "var(--space-8)", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <h1 style={{ fontSize: "var(--font-size-lg)", fontWeight: 600, color: "var(--apple-label)", letterSpacing: "-0.015em", marginBottom: "var(--space-4)"}}>
-              What to Play Next
+              What to Play
             </h1>
 
             <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, maxWidth: 500 }}>

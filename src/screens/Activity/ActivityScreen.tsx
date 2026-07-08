@@ -52,7 +52,7 @@ export function ActivityScreen() {
                 fontFamily: "var(--apple-font-display)",
               }}
             >
-              Activity & Milestones
+              Activity
             </h1>
             <p style={{ fontSize: 15, color: "var(--apple-secondary-label)", margin: 0 }}>
               Track your daily gameplay contributions, review your annual journey, and unlock library badges.

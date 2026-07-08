@@ -93,7 +93,7 @@ export function CommandPalette() {
     {
       id: "nav-activity",
       category: "Navigation",
-      title: "Activity & Journal",
+      title: "Activity",
       subtitle: "365-day heatmap, timeline, and Year in Review",
       icon: <Trophy size={18} color="var(--apple-yellow)" />,
       onSelect: () => navigate("/activity"),
@@ -101,7 +101,7 @@ export function CommandPalette() {
     {
       id: "nav-friends",
       category: "Navigation",
-      title: "Friends & Social",
+      title: "Friends",
       subtitle: "Compare library overlap and hot takes",
       icon: <Users size={18} color="var(--apple-purple)" />,
       onSelect: () => navigate("/friends"),
@@ -109,7 +109,7 @@ export function CommandPalette() {
     {
       id: "nav-stats",
       category: "Navigation",
-      title: "Stats & Insights",
+      title: "Stats",
       subtitle: "Burndown charts and gaming habits",
       icon: <BarChart2 size={18} color="var(--apple-green)" />,
       onSelect: () => navigate("/stats"),
