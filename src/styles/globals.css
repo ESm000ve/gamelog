@@ -92,7 +92,9 @@ a:hover {
   }
 }
 
-/* Allow scrolling in Storybook which adds .sb-show-main to the body */
-body.sb-show-main {
+/* Allow scrolling in Storybook (both Canvas and Docs pages) */
+body.sb-show-main,
+body.sb-main-padded,
+body.sb-main-fullscreen {
   overflow: auto !important;
 }
