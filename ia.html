@@ -169,6 +169,44 @@
 .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim)}
 .leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
+/* SITEMAP DIAGRAM VIEW */
+.sm-view{flex:1;overflow-x:auto;padding:36px 28px;background:var(--bg);display:flex;flex-direction:column;align-items:center}
+.sm-root-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:0}
+.sm-root-box{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 32px;background:var(--surface-2);border:2px solid rgba(255,255,255,0.18);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:2;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.sm-root-box:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,0.5);border-color:rgba(255,255,255,0.4)}
+.sm-root-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:0.02em}
+.sm-root-sub{font-size:11px;color:var(--text-muted)}
+.sm-stem-top{width:2px;height:24px;background:rgba(255,255,255,0.22)}
+.sm-tree-container{display:flex;flex-direction:column;align-items:center;position:relative;min-width:max-content}
+.sm-columns{display:flex;gap:18px;position:relative;padding-top:24px}
+.sm-bus-bar{position:absolute;top:0;left:80px;right:80px;height:2px;background:rgba(255,255,255,0.22)}
+.sm-col{display:flex;flex-direction:column;align-items:center;width:155px;flex-shrink:0;position:relative}
+.sm-col-stem-in{position:absolute;top:-24px;width:2px;height:24px;background:rgba(255,255,255,0.22)}
+.sm-hdr-card{width:100%;padding:11px 10px;border-radius:8px;font-size:12px;font-weight:700;color:#fff;text-align:center;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:3px;align-items:center;border:1px solid rgba(255,255,255,0.15)}
+.sm-hdr-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.45)}
+.sm-hdr-card.selected{outline:2px solid #fff;outline-offset:2px}
+.sm-route-tag{font-family:var(--mono);font-size:10px;opacity:0.9;font-weight:500}
+.sm-children{display:flex;flex-direction:column;width:100%;position:relative;padding-top:16px;gap:10px}
+.sm-col-stem-down{position:absolute;top:0;bottom:16px;left:50%;width:2px;background:rgba(255,255,255,0.15);transform:translateX(-50%)}
+.sm-child-wrap{position:relative;display:flex;align-items:center;width:100%;z-index:1}
+.sm-child-card{width:100%;padding:9px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.25);display:flex;flex-direction:column;gap:3px;align-items:center}
+.sm-child-card:hover{background:var(--surface-3);border-color:var(--border-hover);color:#fff}
+.sm-child-card.selected{border-color:var(--accent);background:var(--accent-dim);color:#fff}
+.sm-child-sub{font-size:9px;color:var(--text-dim);font-weight:400;line-height:1.2}
+.sm-c-cyan{background:linear-gradient(135deg,#0284c7,#0369a1);border-color:#38bdf8}
+.sm-c-blue{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:#60a5fa}
+.sm-c-teal{background:linear-gradient(135deg,#0d9488,#0f766e);border-color:#2dd4bf}
+.sm-c-green{background:linear-gradient(135deg,#16a34a,#15803d);border-color:#4ade80}
+.sm-c-purple{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:#a78bfa}
+.sm-c-indigo{background:linear-gradient(135deg,#4f46e5,#4338ca);border-color:#818cf8}
+.sm-c-amber{background:linear-gradient(135deg,#d97706,#b45309);border-color:#fbbf24}
+.sm-c-rose{background:linear-gradient(135deg,#e11d48,#be123c);border-color:#fb7185}
+.sm-child-card.c-screen{border-left:3px solid #a78bfa}
+.sm-child-card.c-modal{border-left:3px solid #60a5fa}
+.sm-child-card.c-overlay{border-left:3px solid #fbbf24}
+.sm-child-card.c-chrome{border-left:3px solid #94a3b8}
+.sm-child-card.c-widget{border-left:3px solid #e879f9}
+
 .ia-app .hdr-title,.ia-app .node-label,.ia-app .d-name,.ia-app .iss-gtitle,.ia-app .iss-ilbl{color:var(--text)}
 @media(max-width:760px){.ia-app .detail-panel{display:none}.ia-app .hdr-btns{display:none}}
 </style>
@@ -190,6 +228,7 @@
   <div class="hdiv"></div>
   <div class="tabs" role="tablist">
     <button class="tab active" onclick="setView('tree')" id="tab-tree">Navigation Tree</button>
+    <button class="tab" onclick="setView('sitemap')" id="tab-sitemap">Visual Sitemap</button>
     <button class="tab" onclick="setView('inventory')" id="tab-inventory">Screen Inventory</button>
     <button class="tab" onclick="setView('issues')" id="tab-issues">⚑ Flagged Issues</button>
   </div>
@@ -504,6 +543,13 @@ function render() {
         </div>
       </div>
       <div class="detail-panel" id="detail-panel">${renderDetail()}</div>`;
+  } else if (view === 'sitemap') {
+    legend.style.display = 'flex';
+    treeBtns.style.display = 'none';
+    statsStrip.style.display = 'flex';
+    main.innerHTML = `
+      ${renderSitemap()}
+      <div class="detail-panel" id="detail-panel">${renderDetail()}</div>`;
   } else if (view === 'inventory') {
     legend.style.display = 'none';
     treeBtns.style.display = 'none';
@@ -515,6 +561,135 @@ function render() {
     statsStrip.style.display = 'none';
     main.innerHTML = renderIssues();
   }
+}
+
+function renderSitemap() {
+  const smCols = [
+    {
+      title: 'Library',
+      route: '/',
+      id: 'library',
+      theme: 'sm-c-cyan',
+      children: [
+        { title: 'Game Detail View', sub: '/game/:igdbId [URL]', id: 'lib-gd', type: 'screen' },
+        { title: 'Related Games', sub: '/game/:id/related', id: 'gd-related', type: 'screen' },
+        { title: 'Add Game Modal', sub: 'Sidebar "+ Add game"', id: 'add-game', type: 'modal' },
+        { title: 'Log Editor Modal', sub: '1 of 41 direct Modal', id: 'lib-log', type: 'modal' },
+        { title: 'Share List Modal', sub: 'Toolbar share CTA', id: 'lib-share', type: 'modal' }
+      ]
+    },
+    {
+      title: 'Lists',
+      route: '/lists',
+      id: 'lists',
+      theme: 'sm-c-blue',
+      children: [
+        { title: 'Single List View', sub: '/lists/:listId [URL]', id: 'dyn-list', type: 'screen' },
+        { title: 'Game in List Detail', sub: 'Click game cover', id: 'list-gd', type: 'screen' },
+        { title: 'Share Custom List', sub: 'List toolbar share', id: 'list-share', type: 'modal' }
+      ]
+    },
+    {
+      title: 'Browse Systems',
+      route: '/systems',
+      id: 'systems',
+      theme: 'sm-c-teal',
+      children: [
+        { title: 'Platform Filter Page', sub: '/systems/:platformId', id: 'platform', type: 'screen' },
+        { title: 'Platform Game Detail', sub: 'Click platform cover', id: 'plat-gd', type: 'screen' },
+        { title: 'Platform Log Action', sub: 'Quick log CTA', id: 'plat-log', type: 'modal' }
+      ]
+    },
+    {
+      title: 'What to Play',
+      route: '/recommend',
+      id: 'recommend',
+      theme: 'sm-c-green',
+      children: [
+        { title: 'Backlog Roulette', sub: 'Spin Roulette Modal', id: 'roulette', type: 'modal' },
+        { title: 'Recommended Game', sub: 'Start Playing CTA', id: 'rec-gd', type: 'screen' }
+      ]
+    },
+    {
+      title: 'Activity',
+      route: '/activity',
+      id: 'activity',
+      theme: 'sm-c-purple',
+      children: [
+        { title: 'Year in Review Modal', sub: 'Wrapped slides (⌘K)', id: 'yir', type: 'modal' },
+        { title: 'Timeline Game Detail', sub: 'Click journal event', id: 'act-gd', type: 'screen' }
+      ]
+    },
+    {
+      title: 'Friends',
+      route: '/friends',
+      id: 'friends',
+      theme: 'sm-c-indigo',
+      children: [
+        { title: 'Compare Libraries', sub: 'Clickable covers → /game', id: 'friends', type: 'screen' }
+      ]
+    },
+    {
+      title: 'Stats & Settings',
+      route: '/stats · /settings',
+      id: 'stats',
+      theme: 'sm-c-amber',
+      children: [
+        { title: 'Stats Dashboard', sub: '/stats screen', id: 'stats', type: 'screen' },
+        { title: 'Settings Screen', sub: '/settings screen', id: 'settings', type: 'screen' },
+        { title: 'Steam Import Review', sub: '/import/steam (2-deep)', id: 'steam', type: 'screen' },
+        { title: 'Store Diagnostic', sub: '/debug (confirmed wipe)', id: 'debug', type: 'screen' }
+      ]
+    },
+    {
+      title: 'Search & Command',
+      route: 'Global · ⌘K Palette',
+      id: 'global-search',
+      theme: 'sm-c-rose',
+      children: [
+        { title: 'Global Search Widget', sub: 'Top-right IGDB Catalog', id: 'global-search', type: 'widget' },
+        { title: 'Search Results Page', sub: '/search (Press Enter)', id: 'search', type: 'screen' },
+        { title: 'Command Palette (⌘K)', sub: 'Library search & Actions', id: 'cmdpal', type: 'overlay' }
+      ]
+    }
+  ];
+
+  return `
+    <div class="sm-view">
+      <div class="sm-tree-container">
+        <div class="sm-root-wrap">
+          <div class="sm-root-box" onclick="nodeClick('sidebar', false)">
+            <div class="sm-root-title">Gamelog Information Architecture</div>
+            <div class="sm-root-sub">Root Application Shell · App.tsx · All boxes interactive</div>
+          </div>
+          <div class="sm-stem-top"></div>
+        </div>
+        <div class="sm-columns">
+          <div class="sm-bus-bar"></div>
+          ${smCols.map(c => `
+            <div class="sm-col">
+              <div class="sm-col-stem-in"></div>
+              <div class="sm-hdr-card ${c.theme} ${selectedId === c.id ? 'selected' : ''}" onclick="nodeClick('${c.id}', false)">
+                <div>${c.title}</div>
+                <div class="sm-route-tag">${c.route}</div>
+              </div>
+              <div class="sm-children">
+                <div class="sm-col-stem-down"></div>
+                ${c.children.map(ch => `
+                  <div class="sm-child-wrap">
+                    <div class="sm-child-card c-${ch.type} ${selectedId === ch.id ? 'selected' : ''}" onclick="nodeClick('${ch.id}', false)">
+                      <div>${ch.title}</div>
+                      <div class="sm-child-sub">${ch.sub}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderNode(n, indent) {
