@@ -91,3 +91,8 @@ a:hover {
     opacity: 0.5;
   }
 }
+
+/* Allow scrolling in Storybook which adds .sb-show-main to the body */
+body.sb-show-main {
+  overflow: auto !important;
+}
